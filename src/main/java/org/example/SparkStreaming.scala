@@ -28,7 +28,8 @@ object SparkStreaming extends scala.Serializable {
       ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG -> brokers,
       ConsumerConfig.GROUP_ID_CONFIG -> groupId,
       ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
-      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer])
+      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
+      ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> true)
 
     val bootstrapServers: String = "127.0.0.1:9092"
 
@@ -84,6 +85,7 @@ object SparkStreaming extends scala.Serializable {
       }
     }
     ssc.start()
+    ssc.stop()
     ssc.awaitTermination()
     println("///////" + count / ((System.nanoTime() - time) / 1e9d) + " tps")
   }
