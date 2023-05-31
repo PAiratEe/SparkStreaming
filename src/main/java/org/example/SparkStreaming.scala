@@ -29,7 +29,9 @@ object SparkStreaming extends scala.Serializable {
       ConsumerConfig.GROUP_ID_CONFIG -> groupId,
       ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
       ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> classOf[StringDeserializer],
-      ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> true)
+      ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG -> "true",
+      ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG -> "1000"
+    )
 
     val bootstrapServers: String = "127.0.0.1:9092"
 
@@ -66,13 +68,11 @@ object SparkStreaming extends scala.Serializable {
         val connect = DriverManager.getConnection("jdbc:postgresql://localhost:5432/spark-streaming", properties)
         val statement = connect.createStatement()
         try {
-//          rdd.persist(StorageLevel.DISK_ONLY)
           rdd.collect().foreach(unit => {
             count += 1
             val sql = s"INSERT INTO data (column2, column3) VALUES('${unit.substring(0, unit.indexOf("\n"))}', '${(System.nanoTime() - time) / 1e9d}')"
             statement.executeUpdate(sql)
           })
-//          rdd.unpersist()
         }
         catch {
           case c: IOException =>
@@ -85,7 +85,6 @@ object SparkStreaming extends scala.Serializable {
       }
     }
     ssc.start()
-    ssc.stop()
     ssc.awaitTermination()
     println("///////" + count / ((System.nanoTime() - time) / 1e9d) + " tps")
   }
