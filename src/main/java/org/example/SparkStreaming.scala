@@ -86,7 +86,6 @@ object SparkStreaming extends scala.Serializable {
     }
     ssc.start()
     ssc.awaitTermination()
-    println("///////" + count / ((System.nanoTime() - time) / 1e9d) + " tps")
   }
 
 }
